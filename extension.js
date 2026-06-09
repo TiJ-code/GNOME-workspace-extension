@@ -38,7 +38,13 @@ export default class AutoWorkspaceMaximiseExtension extends Extension {
   }
 
   _trackWindow(window) {
-    if (!window || this._windowSignals.has(window))
+    if (!window)
+      return;
+
+    if (!this._isPrimaryMonitor(window))
+      return;
+
+    if (this._windowSignals.has(window))
       return;
 
     const maximised = this._isMaximised(window);
@@ -85,6 +91,18 @@ export default class AutoWorkspaceMaximiseExtension extends Extension {
       )
     );
 
+    signals.push(
+      window.connect(
+        'notify::monitor', () => {
+          if (!this._isPrimaryMonitor(window)) {
+            this._untrackWindow(window);
+          } else {
+            this._trackWindow(window);
+          }
+        }
+      )
+    );
+
     this._windowSignals.set(window, signals);
   }
 
@@ -105,7 +123,19 @@ export default class AutoWorkspaceMaximiseExtension extends Extension {
     return window.maximized_horizontally && window.maximized_vertically;
   }
 
+  _isPrimaryMonitor(window) {
+    const display = global.display;
+
+    const primaryIndex = display.get_primary_monitor();
+    const windowIndex = window.get_monitor();
+
+    return windowIndex === primaryIndex;
+  }
+
   _handleStateChange(window) {
+    if (!this._isPrimaryMonitor(window))
+      return;
+
     const state = this._trackedState.get(window);
 
     if (!state)
