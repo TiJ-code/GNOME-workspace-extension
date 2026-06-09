@@ -120,6 +120,12 @@ export default class AutoWorkspaceMaximiseExtension extends Extension {
     if (!becameMaximised && !becameFullscreen)
       return;
 
+    const workspace = window.get_workspace();
+    const windows = workspace.list_windows();
+
+    if (windows.length <= 1)
+      return;
+
     this._moveToOwnWorkspace(window);
   }
 
