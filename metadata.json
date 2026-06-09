@@ -1,0 +1,7 @@
+{
+  "uuid": "auto-workspace-maximise@tij",
+  "name": "Auto Workspace on Maximise",
+  "description": "Moves maximised windows to a new workspace",
+  "shell-version": ["50"],
+  "version": 1
+}
