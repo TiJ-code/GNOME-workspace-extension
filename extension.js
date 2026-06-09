@@ -50,6 +50,7 @@ export default class AutoWorkspaceMaximiseExtension extends Extension {
     const state = {
       maximised: false,
       fullscreen: false,
+      originalWorkspace: null,
     };
 
     this._trackedState.set(window, state);
@@ -105,28 +106,67 @@ export default class AutoWorkspaceMaximiseExtension extends Extension {
   }
 
   _handleStateChange(window) {
-    const previous = this._trackedState.get(window);
+    const state = this._trackedState.get(window);
+
+    if (!state)
+      return;
 
     const nowMaximised = this._isMaximised(window);
     const nowFullscreen = window.fullscreen;
 
-    const becameMaximised = !previous.maximised && nowMaximised;
+    const wasSpecial = state.maximised || state.fullscreen;
+    const isSpecial = nowMaximised || nowFullscreen;
 
-    const becameFullscreen = !previous.fullscreen && nowFullscreen;
+    const becameSpecial = !wasSpecial && isSpecial;
+    const leftSpecial = wasSpecial && !isSpecial;
 
-    previous.maximised = nowMaximised;
-    previous.fullscreen = nowFullscreen;
+    state.maximised = nowMaximised;
+    state.fullscreen = nowFullscreen;
 
-    if (!becameMaximised && !becameFullscreen)
-      return;
+    if (becameSpecial)
+      this._handleBecameSpecial(window, state);
 
+    if (leftSpecial)
+      this._handleLeftSpecial(window, state);
+  }
+
+  _handleBecameSpecial(window, state) {
     const workspace = window.get_workspace();
-    const windows = workspace.list_windows();
 
-    if (windows.length <= 1)
+    if (workspace.list_windows().length <= 1)
       return;
+
+    state.originalWorkspace = workspace;
 
     this._moveToOwnWorkspace(window);
+  }
+
+  _handleLeftSpecial(window, state) {
+    const workspace = state.originalWorkspace;
+
+    if (!workspace)
+      return;
+
+    let stillExists = false;
+
+    for (let i = 0; i < workspaceManager.n_workspaces; i++) {
+      if (workspaceManager.get_workspace_by_index(i) === workspace) {
+        stillExists = true;
+        break;
+      }
+    }
+
+    if (!stillExists) {
+      state.originalWorkspace = null;
+      return;
+    }
+
+    window.change_workspace(workspace);
+
+    if (window.has_focus())
+      workspace.activate(global.get_current_time());
+
+    state.originalWorkspace = null;
   }
 
   _moveToOwnWorkspace(window) {
