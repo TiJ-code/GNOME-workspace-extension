@@ -14,7 +14,10 @@ enable:
 disable:
 	gnome-extensions disable $(UUID)
 
-reload: disable enable
+reload:
+	gnome-extensions disable $(UUID)
+	sleep 1
+	gnome-extensions enable $(UUID)
 
 logs:
 	journalctl --user -f -o cat | grep -i $(UUID)
