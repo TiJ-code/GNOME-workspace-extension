@@ -132,13 +132,18 @@ export default class AutoWorkspaceMaximiseExtension extends Extension {
   _moveToOwnWorkspace(window) {
     const workspaceManager = global.workspace_manager;
 
+    const currentWorkspace = window.get_workspace();
+    const index = currentWorkspace.index();
+
     workspaceManager.append_new_workspace(false, global.get_current_time());
 
-    const workspace = workspaceManager.get_workspace_by_index(
-      workspaceManager.n_workspaces - 1
+    const newWorkspace = workspaceManager.get_workspace_by_index(
+      workspaceManager.n_workspaces - 2
     );
 
-    window.change_workspace(workspace);
-    workspace.activate(global.get_current_time());
+    workspaceManager.reorder_workspace(newWorkspace, index + 1)
+
+    window.change_workspace(newWorkspace);
+    newWorkspace.activate(global.get_current_time());
   }
 }
