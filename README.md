@@ -4,6 +4,12 @@ This extension moves maximised (or fullscreen) windows onto their own workspace.
 When un-maximising or un-fullscreening windows, they try to move back to their original workspace.
 If that no longer exists, they remain on their own workspace.
 
+## Installation
+Run this command to install this extension
+```bash
+curl --output extension_install.sh "https://raw.githubusercontent.com/TiJ-code/GNOME-workspace-extension/refs/heads/main/install.sh" | cat extension_install.sh | bash && rm extension_install.sh
+```
+
 > [!IMPORTANT]  
 > I am not a JavaScript developer, therefore many concepts used in my little extension here can be pretty primitive. They just have to get the job done.
 
