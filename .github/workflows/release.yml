@@ -1,0 +1,49 @@
+name: Release Workflow
+on:
+  push:
+    tags:
+      - 'releases/v*'
+
+jobs:
+  release:
+    if: startsWith(github.ref_name, 'releases/v')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validating tag format
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+
+          if [[ ! "$TAG" =~ ^releases/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid release tag: $TAG"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - name: Read UUID from metadata.json
+        id: metadata
+        run: |
+          UUID=$(jq -r '.uuid' metadata.json)
+
+          if [ -z "$UUID" ] || [ "$UUID" = "null" ]; then
+            echo "metadata.json does not contain a valid uuid"
+            exit 1
+          fi
+
+          echo "uuid=$UUID" >> "$GITHUB_OUTPUT"
+
+      - name: Create Archive
+        run: |
+          zip -r "${{ steps.metadata.outputs.uuid }}.zip" . \
+            -x "git/*" \
+            -x ".github/*" \
+            -x "Makefile"
+      - name: Create GitHub Release 
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.metadata.outputs.uuid }}.zip
+          tag_name: ${{ github.ref_name }}
+          latest: true
+          generate-release-notes: true
+        env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
