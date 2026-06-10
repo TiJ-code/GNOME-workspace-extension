@@ -38,7 +38,8 @@ jobs:
           zip -r "${{ steps.metadata.outputs.uuid }}.zip" . \
             -x "git/*" \
             -x ".github/*" \
-            -x "Makefile"
+            -x "Makefile" \
+            -x "install.sh"
       - name: Create GitHub Release 
         uses: softprops/action-gh-release@v2
         with:
