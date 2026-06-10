@@ -163,7 +163,13 @@ export default class AutoWorkspaceMaximiseExtension extends Extension {
   _handleBecameSpecial(window, state) {
     const workspace = window.get_workspace();
 
-    if (workspace.list_windows().length <= 1)
+    const monitor = window.get_monitor();
+
+    const windowsOnSameMonitorAndWorkspace = workspace
+      .list_windows()
+      .filter(w => w !== window && !w.skip_taskbar && w.get_monitor() === monitor);
+
+    if (windowsOnSameMonitorAndWorkspace.length === 0)
       return;
 
     state.originalWorkspace = workspace;
