@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<schemalist>
+  <schema id="org.gnome.shell.extensions.autoworkspacemaximise"
+    path="/org/gnome/shell/extensions/autoworkspacemaximise/">
+    <key name="primary-monitor-only" type="b">
+      <default>true</default>
+    </key>
+    <key name="move-maximised" type="b">
+      <default>true</default>
+    </key>
+    <key name="move-fullscreen" type="b">
+      <default>true</default>
+    </key>
+    <key name="restore-workspace" type="b">
+      <default>true</default>
+    </key>
+    <key name="ignore-skip-taskbar" type="b">
+      <default>true</default>
+    </key>
+  </schema>
+</schemalist>
