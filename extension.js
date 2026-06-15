@@ -5,12 +5,16 @@ export default class AutoWorkspaceMaximiseExtension extends Extension {
   constructor(metadata) {
     super(metadata);
 
+    this._settings = null;
+
     this._windowSignals = new Map();
     this._trackedState = new Map();
     this._createdSignal = null;
   }
 
   enable() {
+    this._settings = this.getSettings();
+
     for (const window of global.display.get_tab_list(0, null)) {
       this._trackWindow(window);
     }
@@ -222,5 +226,9 @@ export default class AutoWorkspaceMaximiseExtension extends Extension {
 
     window.change_workspace(newWorkspace);
     newWorkspace.activate(global.get_current_time());
+  }
+
+  getSettings() {
+    return super.getSettings('org.gnome.shell.extensions.autoworkspacemaximise');
   }
 }
