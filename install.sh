@@ -8,17 +8,11 @@ mkdir "$CLONE_DIR"
 git clone "$URL" "$CLONE_DIR"
 cd "$CLONE_DIR"
 
-UUID=$(jq -r '.uuid' metadata.json)
+echo ""
+echo "Installing extension"
+make install
 
-echo "Installing GNOME extension $UUID"
-
-EXT_DIR="~/.local/share/gnome-shell/extensions/$UUID"
-
-rm -fr "$EXT_DIR"
-mkdir -p "$EXT_DIR"
-cp extension.js metadata.json "$EXT_DIR"
-
-cd ..
-
-rm -fr "$CLONE_DIR"
+echo ""
+echo "Logging out..."
+gnome-session-quit
 
